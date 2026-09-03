@@ -1,0 +1,10 @@
+{
+  "name": "Daily Quest RPG",
+  "short_name": "Quest RPG",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#070b14",
+  "theme_color": "#111827",
+  "description": "공부와 할 일을 RPG 퀘스트와 집중 원정으로 바꾸는 개인 생산성 앱",
+  "icons": []
+}
