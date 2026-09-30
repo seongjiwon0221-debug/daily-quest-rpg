@@ -1,4 +1,4 @@
-const CACHE = 'daily-quest-rpg-v4-cache-v1';
+const CACHE = 'daily-quest-rpg-v4-cache-v2';
 const ASSETS = ['./', './index.html', './manifest.webmanifest'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)));
