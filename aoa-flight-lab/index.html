@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#07131f">
+<title>AOA Flight Lab</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}body{margin:0;background:#061019;color:#edf8ff;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}.app{max-width:900px;margin:auto;padding:14px}h1{margin:4px 0;font-size:clamp(25px,6vw,38px)}p{line-height:1.55;color:#c9d8e2}.eyebrow{color:#77f59f;font-weight:900;font-size:12px;letter-spacing:.15em}.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}.tab{min-height:56px;border:1px solid #294253;border-radius:16px;background:#0e1c27;color:#d7e5ee;font-weight:900}.tab.on{background:#dff8e7;color:#062014;border-color:transparent}.panel{display:none}.panel.on{display:block}.card{background:#0d1b26;border:1px solid #294253;border-radius:20px;padding:16px}.title{display:flex;justify-content:space-between;gap:10px;align-items:center}.title h2{margin:0;font-size:20px}.badge{font-size:11px;color:#9db1bf;border:1px solid #294253;border-radius:999px;padding:6px 9px}.viz{position:relative;border:1px solid #294253;border-radius:16px;overflow:hidden;background:#08141e}.viz canvas{display:block;width:100%;height:auto;touch-action:none}.controls{display:grid;gap:14px;margin-top:15px}.control label{display:flex;justify-content:space-between;font-weight:900;margin-bottom:7px}.control output{color:#6fd3ff}input[type=range]{appearance:none;width:100%;height:44px;background:transparent}input[type=range]::-webkit-slider-runnable-track{height:10px;border-radius:999px;background:#294251}input[type=range]::-webkit-slider-thumb{appearance:none;width:32px;height:32px;border-radius:50%;margin-top:-11px;background:#effffa;border:6px solid #2ae082}.toggle{display:flex;align-items:center;gap:12px;margin-top:14px;padding:12px;background:#091620;border:1px solid #294253;border-radius:14px;font-weight:900}.toggle input{width:28px;height:28px}.metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:14px}.metric{background:#081620;border:1px solid #203947;border-radius:14px;padding:11px}.metric small{display:block;color:#9db1bf}.metric strong{display:block;margin-top:3px;font-size:clamp(18px,5vw,27px)}.status{margin-top:12px;padding:13px;border:1px solid #294253;border-radius:14px;background:#091620;line-height:1.5}.good{border-color:#246943}.warn{border-color:#8a6a25}.danger{border-color:#8c3841}.quiz button{width:100%;min-height:52px;margin-top:8px;border:1px solid #294253;border-radius:13px;background:#10212d;color:white;text-align:left;padding:12px;font-weight:900}.quiz button.correct{background:#16432b}.quiz button.wrong{background:#4b2028}.note{margin-top:12px;color:#8fa4b2;font-size:12px;line-height:1.5}@media(min-width:700px){.controls.two{grid-template-columns:1fr 1fr}.metrics{grid-template-columns:repeat(4,1fr)}}@media(orientation:landscape) and (max-height:650px){.tab{min-height:46px}.app{padding-top:7px}.card{padding:12px}}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="eyebrow">AIRCRAFT EDUCATION LAB</div>
+<h1>✈ AOA Flight Lab</h1>
+<p>받음각(AOA)을 손가락으로 움직여 이해하는 터치식 교육 프로그램. <b>실제 CFD나 F-16 비공개 제어법칙을 재현한 시뮬레이터가 아니라 교육용 단순 모델</b>이다.</p>
+<div class="tabs"><button class="tab on" data-p="concept">① 개념</button><button class="tab" data-p="fighter">② 전투기</button><button class="tab" data-p="flow">③ 유동/실속</button></div>
+
+<section id="concept" class="panel on"><div class="card">
+<div class="title"><h2>Pitch와 AOA 구별</h2><span class="badge">직관 모듈</span></div>
+<p>기수 자세와 실제 비행경로를 따로 움직여 봐. 두 방향의 차이가 AOA다.</p>
+<div class="viz"><canvas id="c1" width="900" height="430"></canvas></div>
+<div class="controls two"><div class="control"><label>기수 자세 Pitch <output id="po"></output></label><input id="pitch" type="range" min="-5" max="30" value="12"></div><div class="control"><label>비행경로각 γ <output id="go"></output></label><input id="path" type="range" min="-15" max="25" value="5"></div></div>
+<div class="metrics"><div class="metric"><small>Pitch</small><strong id="mp"></strong></div><div class="metric"><small>Flight path</small><strong id="mg"></strong></div><div class="metric"><small>AOA</small><strong id="ma"></strong></div><div class="metric"><small>상태</small><strong id="ms"></strong></div></div>
+<div id="cs" class="status"></div>
+</div></section>
+
+<section id="fighter" class="panel"><div class="card">
+<div class="title"><h2>FBW 전투기 개념 체험</h2><span class="badge">F-16 개념 기반</span></div>
+<p>사이드스틱 입력 → 비행제어 계산 → 기체 자세 → AOA 변화를 단순화해서 본다. 아래 보호 로직의 수치는 <b>설명용 임의값</b>이며 실제 F-16 제한값이 아니다.</p>
+<div class="viz"><canvas id="c2" width="900" height="470"></canvas></div>
+<div class="controls two"><div class="control"><label>사이드스틱 명령 <output id="so"></output></label><input id="stick" type="range" min="-100" max="100" value="25"></div><div class="control"><label>비행경로각 γ <output id="fgo"></output></label><input id="gamma" type="range" min="-15" max="15" value="-3"></div></div>
+<label class="toggle"><input id="protect" type="checkbox" checked><span>교육용 AOA 보호 로직</span></label>
+<div class="metrics"><div class="metric"><small>Pitch</small><strong id="fp"></strong></div><div class="metric"><small>Flight path</small><strong id="fg"></strong></div><div class="metric"><small>AOA</small><strong id="fa"></strong></div><div class="metric"><small>제어 상태</small><strong id="fm"></strong></div></div>
+<div id="fs" class="status"></div>
+</div></section>
+
+<section id="flow" class="panel"><div class="card">
+<div class="title"><h2>AOA · 유동 · 실속</h2><span class="badge">공력 원리</span></div>
+<p>AOA와 속도를 움직여 유동 박리의 방향성을 확인해 봐. 임계 AOA는 실제 기체마다 달라지므로 여기 단계 구분은 교육용이다.</p>
+<div class="viz"><canvas id="c3" width="900" height="470"></canvas></div>
+<div class="controls two"><div class="control"><label>AOA <output id="ao"></output></label><input id="aoa" type="range" min="-5" max="25" step=".5" value="5"></div><div class="control"><label>속도 <output id="vo"></output></label><input id="speed" type="range" min="40" max="120" value="80"></div></div>
+<div class="metrics"><div class="metric"><small>AOA</small><strong id="aa"></strong></div><div class="metric"><small>속도</small><strong id="av"></strong></div><div class="metric"><small>유동</small><strong id="af"></strong></div><div class="metric"><small>양력 경향</small><strong id="al"></strong></div></div>
+<div id="as" class="status"></div>
+</div>
+<div class="card quiz" style="margin-top:12px"><div class="title"><h2>이해 확인</h2><span class="badge">터치해서 채점</span></div><p>기수 +18°, 실제 상승경로 +11°라면 AOA는?</p><button data-a="0">18°</button><button data-a="1">7°</button><button data-a="0">29°</button><div id="qf" class="status">정답은 선택 전까지 표시하지 않는다.</div></div>
+</section>
+<div class="note">핵심: AOA는 기수의 지평선 기준 각도가 아니라 날개 기준선과 상대풍/비행경로 사이의 각도다. 실제 실속은 임계 AOA와 연결되며 그 값은 형상·Mach·Reynolds 수·하중·설정 등에 따라 달라진다.</div>
+</div>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+$$('.tab').forEach(b=>b.onclick=()=>{$$('.tab').forEach(x=>x.classList.remove('on'));$$('.panel').forEach(x=>x.classList.remove('on'));b.classList.add('on');$('#'+b.dataset.p).classList.add('on')});
+function line(x,a,b,c,d,col,w=3){x.strokeStyle=col;x.lineWidth=w;x.beginPath();x.moveTo(a,b);x.lineTo(c,d);x.stroke()}
+function jet(x,X,Y,A,S=1){x.save();x.translate(X,Y);x.rotate(-A*Math.PI/180);x.scale(S,S);x.strokeStyle='#effffa';x.lineWidth=6;x.beginPath();x.moveTo(-105,0);x.lineTo(45,-12);x.lineTo(100,0);x.lineTo(45,12);x.closePath();x.stroke();x.beginPath();x.moveTo(-15,0);x.lineTo(-65,-54);x.lineTo(20,-8);x.moveTo(-15,0);x.lineTo(-65,54);x.lineTo(20,8);x.stroke();x.restore()}
+function arrow(x,a,b,c,d,col){line(x,a,b,c,d,col,4);const q=Math.atan2(d-b,c-a),h=14;x.fillStyle=col;x.beginPath();x.moveTo(c,d);x.lineTo(c-h*Math.cos(q-.5),d-h*Math.sin(q-.5));x.lineTo(c-h*Math.cos(q+.5),d-h*Math.sin(q+.5));x.fill()}
+function ang(v){return(v>=0?'+':'')+(Math.round(v*10)/10)+'°'}
+function concept(){let p=+$('pitch').value,g=+$('path').value,a=p-g,c=$('c1'),x=c.getContext('2d');x.clearRect(0,0,c.width,c.height);x.fillStyle='#08141e';x.fillRect(0,0,c.width,c.height);line(x,60,325,840,325,'#4e6775',2);jet(x,450,220,p,1);let L=240;arrow(x,450,220,450+L*Math.cos(-g*Math.PI/180),220+L*Math.sin(-g*Math.PI/180),'#6fd3ff');x.fillStyle='#ffd56b';x.font='900 27px system-ui';x.fillText('AOA ≈ '+ang(a),50,55);x.fillStyle='#9db1bf';x.font='18px system-ui';x.fillText('기수 방향과 실제 비행경로 방향의 차이',50,86);$('po').value=ang(p);$('go').value=ang(g);$('mp').textContent=ang(p);$('mg').textContent=ang(g);$('ma').textContent=ang(a);let st='보통',cl='good',tx='기수가 들려 있어도 비행경로가 같이 상승하면 AOA는 작을 수 있다.';if(a<0){st='음의 AOA';cl='warn';tx='상대풍 방향이 날개 기준선 위쪽에 있는 상태다.'}else if(a>15){st='고 AOA';cl='danger';tx='고받음각 영역이다. 실제 임계 AOA를 뜻하는 고정 수치는 아니다.'}$('ms').textContent=st;$('cs').className='status '+cl;$('cs').textContent=tx}
+['pitch','path'].forEach(i=>$('#'+i).oninput=concept);concept();
+function fighter(){let cmd=+$('stick').value,g=+$('gamma').value,p=cmd*.20,a=p-g,lim=false,m='FBW EDU';if($('#protect').checked){if(a>18){a=18;p=a+g;lim=true}if(a<-8){a=-8;p=a+g;lim=true}if(lim)m='LIMITING'}else m='RAW EDU';let c=$('c2'),x=c.getContext('2d');x.clearRect(0,0,c.width,c.height);x.fillStyle='#0a2637';x.fillRect(0,0,900,250);x.fillStyle='#24311f';x.fillRect(0,250,900,220);x.save();x.translate(450,250);x.rotate(-g*Math.PI/180);line(x,-520,0,520,0,'#77f59f',3);x.restore();jet(x,450,250,p,.9);x.strokeStyle='#77f59f';x.lineWidth=3;x.strokeRect(385,170,130,160);line(x,450,180,450,320,'#77f59f',2);line(x,385,250,515,250,'#77f59f',2);x.fillStyle='#77f59f';x.font='800 22px ui-monospace';x.fillText('AOA '+a.toFixed(1)+'°',35,48);x.fillText('PATH '+g.toFixed(1)+'°',35,80);x.fillText('PITCH '+p.toFixed(1)+'°',35,112);x.fillStyle=lim?'#ffd56b':'#77f59f';x.fillText(m,35,146);$('so').value=cmd+'%';$('fgo').value=ang(g);$('fp').textContent=ang(p);$('fg').textContent=ang(g);$('fa').textContent=ang(a);$('fm').textContent=m;$('fs').className='status '+(lim?'warn':'good');$('fs').textContent=lim?'교육용 보호 로직이 추가 AOA 명령을 제한했다. 실제 F-16 수치와 무관하다.':'입력을 바꾸면서 Pitch·비행경로·AOA가 어떻게 분리되는지 확인해 봐.'}
+['stick','gamma','protect'].forEach(i=>$('#'+i).oninput=fighter);fighter();
+function flow(){let A=+$('aoa').value,V=+$('speed').value,c=$('c3'),x=c.getContext('2d');x.clearRect(0,0,c.width,c.height);x.fillStyle='#08141e';x.fillRect(0,0,900,470);x.save();x.translate(460,270);x.rotate(-A*Math.PI/180);x.fillStyle='#e9fff0';x.beginPath();x.moveTo(-180,0);x.quadraticCurveTo(-50,-42,170,-7);x.quadraticCurveTo(15,38,-180,0);x.fill();x.restore();let s=A<10?'attached':A<=15?'high':A<=20?'partial':'sep';for(let i=0;i<8;i++){let y=72+i*43;x.strokeStyle=(s==='partial'||s==='sep')&&i<5?'#ff7b85':'#6fd3ff';x.lineWidth=3;x.beginPath();x.moveTo(20,y);if(s==='attached'||s==='high')x.bezierCurveTo(250,y,390,y-A*2.2,875,y-A*1.2);else{x.bezierCurveTo(230,y,390,y-A*2.2,525,y-A*1.8);x.bezierCurveTo(590,y+30,670,y+50,875,y+20)}x.stroke()}let ft,lt,cl,tx;if(s==='attached'){ft='부착';lt=A<0?'낮음':'증가';cl='good';tx='유동이 날개 표면을 비교적 잘 따라간다.'}else if(s==='high'){ft='고 AOA';lt='높음';cl='warn';tx='양력이 큰 영역이지만 실제 기체에서는 박리 여유가 줄 수 있다.'}else if(s==='partial'){ft='부분 박리';lt='둔화/감소';cl='warn';tx='유동 박리가 커지는 개념 영역이다.'}else{ft='큰 박리';lt='감소';cl='danger';tx='큰 박리로 양력 유지가 어려워지고 항력은 증가하는 방향이다.'}$('ao').value=A.toFixed(1)+'°';$('vo').value=V+' m/s · '+Math.round(V*3.6)+' km/h';$('aa').textContent=A.toFixed(1)+'°';$('av').textContent=Math.round(V*3.6)+' km/h';$('af').textContent=ft;$('al').textContent=lt;$('as').className='status '+cl;$('as').textContent=tx}
+['aoa','speed'].forEach(i=>$('#'+i).oninput=flow);flow();
+$$('.quiz button').forEach(b=>b.onclick=()=>{if($('#qf').dataset.done)return;$('#qf').dataset.done='1';if(b.dataset.a==='1'){b.classList.add('correct');$('#qf').textContent='정답. 18° − 11° = 약 7°. AOA는 기수각 자체가 아니라 비행경로와의 차이다.'}else{b.classList.add('wrong');$$('.quiz button').find(x=>x.dataset.a==='1').classList.add('correct');$('#qf').textContent='정답은 7°. 기수 자세 18°에서 상승경로 11°를 빼면 된다.'}});
+</script>
+</body></html>
