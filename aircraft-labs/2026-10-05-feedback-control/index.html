@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FBW 피드백 제어 실험</title>
+<style>
+body{font-family:system-ui,sans-serif;margin:0;background:#f6f8fb;color:#172033}main{max-width:820px;margin:auto;padding:18px}
+.status{background:#eaf6ee;border:1px solid #a9d8b5;padding:12px;border-radius:12px}.card{background:white;margin:16px 0;padding:18px;border-radius:16px;box-shadow:0 2px 12px #0001}
+label{display:block;font-weight:700;margin:16px 0 6px}input[type=range]{width:100%;height:36px}button{font-size:17px;min-height:48px;padding:10px 16px;margin:5px;border-radius:12px;border:1px solid #9ba7b5;background:#fff}
+svg{width:100%;height:auto;background:#f8fbff;border-radius:12px}output{font-weight:700}.note{font-size:.92rem;color:#52606d}
+</style></head><body><main>
+<div class="status">로드 완료 · JS가 꺼져도 설명과 기본 조작부는 표시됩니다.</div>
+<h1>FBW: 불안정한 기체를 피드백으로 붙잡기</h1>
+<p>교육용 선형 단순 모델입니다. 실제 F-16의 비공개 제어법칙·게인·한계값을 재현하지 않습니다.</p>
+<section class="card"><h2>1. 핵심 원리 체험 — 피치 피드백</h2>
+<p>기체 자체의 피치 발산 성향과 피드백 게인을 바꿔 보세요. 그림의 기수각은 단순화한 폐루프 응답입니다.</p>
+<label>자연 불안정도 a: <output id="ao">0.30</output></label><input id="a" type="range" min="-0.4" max="0.8" value="0.3" step="0.05">
+<label>피드백 게인 K: <output id="ko">0.60</output></label><input id="k" type="range" min="0" max="1.5" value="0.6" step="0.05">
+<label>초기 피치 교란 θ₀: <output id="to">8°</output></label><input id="th" type="range" min="-15" max="15" value="8" step="1">
+<svg viewBox="0 0 700 250" aria-label="피치 응답"><line x1="30" y1="125" x2="670" y2="125" stroke="#9aa" stroke-width="2"/><polyline id="curve" fill="none" stroke="currentColor" stroke-width="4"/></svg>
+<p id="state">피드백이 발산 성향보다 강하면 교란이 감쇠합니다.</p></section>
+<section class="card"><h2>2. 군용기 사례 체험 — F-16형 개념 루프</h2>
+<p>공개 NASA 설명처럼 조종 입력을 단순 조종면 각도로 보지 않고, 정상가속도·피치율·받음각 같은 상태 피드백을 이용하는 개념을 체험합니다.</p>
+<label>조종사 명령(개념적 g 명령): <output id="cmdO">4.0 g</output></label><input id="cmd" type="range" min="1" max="8" value="4" step=".5">
+<label><input id="fb" type="checkbox" checked> 상태 피드백 사용</label>
+<button id="dist">외란 +5° 넣기</button><button id="reset">초기화</button>
+<svg viewBox="0 0 700 230"><g font-size="18"><rect x="30" y="75" width="135" height="70" rx="12" fill="#eef4ff"/><text x="48" y="116">조종사 명령</text><rect x="275" y="75" width="145" height="70" rx="12" fill="#eef8ee"/><text x="295" y="105">제어법칙</text><text x="291" y="130">+ 피드백</text><rect x="530" y="75" width="135" height="70" rx="12" fill="#fff4e8"/><text x="558" y="116">기체</text><path d="M165 110H275M420 110H530" stroke="#333" stroke-width="3"/><path id="loop" d="M598 145V195H348V145" fill="none" stroke="#333" stroke-width="3"/></g></svg>
+<p id="caseState">피드백 ON: 센서 상태를 되먹임해 명령 응답과 안정화를 동시에 수행하는 개념입니다.</p>
+<p class="note">실제 F-16은 비행조건에 따라 제어법칙과 제한 기능이 달라집니다. 이 페이지의 숫자는 교육용이며 실제 항공기 게인이 아닙니다.</p></section>
+</main><script>
+const $=x=>document.getElementById(x); function core(){let a=+$('a').value,k=+$('k').value,t=+$('th').value;$('ao').value=a.toFixed(2);$('ko').value=k.toFixed(2);$('to').value=t+'°';let pts=[];for(let i=0;i<=64;i++){let time=i/8,theta=t*Math.exp((a-k)*time);theta=Math.max(-30,Math.min(30,theta));pts.push((30+i*10)+','+(125-theta*3));}$('curve').setAttribute('points',pts.join(' '));$('state').textContent=(k>a)?'폐루프 안정: 피치 교란이 시간에 따라 감쇠합니다.':(k==a?'경계 상태: 교란이 거의 줄지 않습니다.':'폐루프 불안정: 보정이 부족해 피치 교란이 커집니다.');}
+['a','k','th'].forEach(x=>$(x).addEventListener('input',core));let d=0;function cas(){let c=+$('cmd').value,on=$('fb').checked;$('cmdO').value=c.toFixed(1)+' g';$('loop').style.opacity=on?'1':'.15';$('caseState').textContent=on?('피드백 ON: '+c.toFixed(1)+' g 명령에 상태 피드백을 사용하며, 현재 외란 '+d+'°를 보정하는 개념입니다.'):'피드백 OFF: 같은 외란에서도 상태 오차를 되먹임하지 않는 개념 비교입니다.';}
+$('cmd').oninput=cas;$('fb').onchange=cas;$('dist').onclick=()=>{d+=5;cas()};$('reset').onclick=()=>{d=0;$('cmd').value=4;$('fb').checked=true;cas()};core();cas();
+</script></body></html>
